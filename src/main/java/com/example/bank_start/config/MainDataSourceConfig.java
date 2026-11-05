@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 /**
  * Конфигурация для основной базы данных (bankdb).
  *
- * <p>Содержит настройки DataSource и JdbcTemplate для основной базы данных,
+ * <p>Содержит настройки DataSource, JdbcTemplate и JPA для основной базы данных,
  * которая хранит данные о продуктах, транзакциях и пользователях.
  */
 @Configuration

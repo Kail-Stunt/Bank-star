@@ -30,7 +30,7 @@ import java.util.UUID;
  * </ul>
  *
  * <h3>Таймауты:</h3>
- * <p>Все кеша имеют TTL 10 минут и максимальный размер 1000 записей.
+ * <p>Все кеша имеют TTL 10 минут и максимальный размер 1000 записей.</p>
  */
 @Repository
 public class TransactionRepository {

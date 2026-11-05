@@ -26,7 +26,7 @@ import java.util.Map;
  *   <li>{@code rulesDataSource} — DataSource для rulesdb.</li>
  *   <li>{@code rulesEntityManagerFactory} — EntityManagerFactory для JPA-сущностей.</li>
  *   <li>{@code rulesTransactionManager} — менеджер транзакций для rulesdb.</li>
- *   <li>{@code rulesJdbcTemplate} — JdbcTemplate для rulesdb.</li>
+ *   <li>{@code rulesJdbcTemplate} — JdbcTemplate для rulesdb (на случай использования JDBC).</li>
  * </ul>
  *
  * <h3>Пакет сканирования:</h3>

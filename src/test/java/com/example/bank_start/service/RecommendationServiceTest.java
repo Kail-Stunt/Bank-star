@@ -4,7 +4,6 @@ import com.example.bank_start.dto.RecommendationDTO;
 import com.example.bank_start.dto.RecommendationDTO.RecommendationItem;
 import com.example.bank_start.evaluator.DynamicRuleEvaluator;
 import com.example.bank_start.repository.DynamicRuleRepository;
-import com.example.bank_start.repository.RuleHitRepository;
 import com.example.bank_start.rule.RecommendationRuleSet;
 
 import java.util.List;
@@ -34,9 +33,6 @@ class RecommendationServiceTest {
     private DynamicRuleRepository dynamicRuleRepository;
 
     @Mock
-    private RuleHitRepository ruleHitRepository;
-
-    @Mock
     private DynamicRuleEvaluator dynamicRuleEvaluator;
 
     private RecommendationService service;
@@ -46,7 +42,7 @@ class RecommendationServiceTest {
         when(rule1.evaluate(TEST_USER_ID)).thenReturn(Optional.of(new RecommendationItem("Rule1", "id1", "text1")));
         when(rule2.evaluate(TEST_USER_ID)).thenReturn(Optional.of(new RecommendationItem("Rule2", "id2", "text2")));
 
-        service = new RecommendationService(List.of(rule1, rule2), dynamicRuleRepository, ruleHitRepository, dynamicRuleEvaluator);
+        service = new RecommendationService(List.of(rule1, rule2), dynamicRuleRepository, dynamicRuleEvaluator);
 
         RecommendationDTO result = service.evaluateRecommendations(TEST_USER_ID);
 
@@ -61,7 +57,7 @@ class RecommendationServiceTest {
         when(rule1.evaluate(TEST_USER_ID)).thenReturn(Optional.empty());
         when(rule2.evaluate(TEST_USER_ID)).thenReturn(Optional.empty());
 
-        service = new RecommendationService(List.of(rule1, rule2), dynamicRuleRepository, ruleHitRepository, dynamicRuleEvaluator);
+        service = new RecommendationService(List.of(rule1, rule2), dynamicRuleRepository, dynamicRuleEvaluator);
 
         RecommendationDTO result = service.evaluateRecommendations(TEST_USER_ID);
 
@@ -74,7 +70,7 @@ class RecommendationServiceTest {
         when(rule1.evaluate(TEST_USER_ID)).thenReturn(Optional.of(new RecommendationItem("Rule1", "id1", "text1")));
         when(rule2.evaluate(TEST_USER_ID)).thenReturn(Optional.empty());
 
-        service = new RecommendationService(List.of(rule1, rule2), dynamicRuleRepository, ruleHitRepository, dynamicRuleEvaluator);
+        service = new RecommendationService(List.of(rule1, rule2), dynamicRuleRepository, dynamicRuleEvaluator);
 
         RecommendationDTO result = service.evaluateRecommendations(TEST_USER_ID);
 
