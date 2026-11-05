@@ -7,6 +7,7 @@ import com.example.bank_start.entity.DynamicRule;
 import com.example.bank_start.repository.DynamicRuleRepository;
 import com.example.bank_start.rule.RecommendationRuleSet;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -83,5 +84,29 @@ public class RecommendationService {
         recommendations.addAll(dynamicRecommendations);
 
         return new RecommendationDTO(userId.toString(), recommendations);
+    }
+
+    /**
+     * Увеличивает счётчик срабатываний правила на единицу.
+     *
+     * <p>Если запись о срабатываниях для данного правила ещё не существует,
+     * создаёт новую запись с начальным значением счётчика 1.
+     *
+     * @param rule динамическое правило, которое сработало
+     */
+    private void incrementRuleHit(DynamicRule rule) {
+        ruleHitRepository.findByDynamicRule_Id(rule.getId())
+                .ifPresentOrElse(
+                        hit -> {
+                            hit.increment();
+                            ruleHitRepository.save(hit);
+                        },
+                        () -> {
+                            RuleHit newHit = new RuleHit();
+                            newHit.setDynamicRule(rule);
+                            newHit.setHitCount(1);
+                            ruleHitRepository.save(newHit);
+                        }
+                );
     }
 }

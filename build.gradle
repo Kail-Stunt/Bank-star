@@ -13,8 +13,31 @@ java {
 	}
 }
 
+// Enable resource filtering for property interpolation
+processResources {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	filesMatching('**/*.properties') {
+		filter {
+			it.replace('@project.version@', project.version.toString())
+		}
+	}
+}
+
 repositories {
 	mavenCentral()
+}
+
+// Set project version for /management/info endpoint
+ext {
+    set('springBootVersion', '4.1.1')
+}
+
+// Pass version to Spring Boot
+bootJar {
+    archiveVersion = version
+}
+jar {
+    archiveVersion = version
 }
 
 dependencies {

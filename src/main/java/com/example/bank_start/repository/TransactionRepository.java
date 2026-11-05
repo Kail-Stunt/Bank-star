@@ -174,4 +174,39 @@ public class TransactionRepository {
             """;
         return jdbcTemplate.queryForList(sql, String.class, userId);
     }
+
+    /**
+     * Ищет пользователя в базе данных по имени и фамилии.
+     *
+     * <p>Выполняет SQL-запрос к таблице USERS, ища пользователя,
+     * у которого FIRST_NAME и LAST_NAME точно совпадают с указанными.
+     *
+     * @param firstName имя пользователя
+     * @param lastName фамилия пользователя
+     * @return UUID пользователя, если найден ровно один; null иначе
+     */
+    public UUID findUserByName(String firstName, String lastName) {
+        String sql = """
+            SELECT ID FROM USERS
+            WHERE FIRST_NAME = ? AND LAST_NAME = ?
+            LIMIT 1
+            """;
+        List<UUID> results = jdbcTemplate.queryForList(sql, UUID.class, firstName, lastName);
+        return results.size() == 1 ? results.get(0) : null;
+    }
+
+    /**
+     * Получает полное имя пользователя по его идентификатору.
+     *
+     * @param userId идентификатор пользователя
+     * @return строка "FirstName LastName", если пользователь найден; null иначе
+     */
+    public String getUserNameById(UUID userId) {
+        String sql = """
+            SELECT FIRST_NAME || ' ' || LAST_NAME FROM USERS
+            WHERE ID = ?
+            """;
+        List<String> results = jdbcTemplate.queryForList(sql, String.class, userId);
+        return results.isEmpty() ? null : results.get(0);
+    }
 }
