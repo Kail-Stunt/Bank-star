@@ -2,7 +2,6 @@ package com.example.bank_start.evaluator;
 
 import com.example.bank_start.entity.DynamicRule;
 import com.example.bank_start.entity.RuleQuery;
-import com.example.bank_start.repository.RuleFiringStatsRepository;
 import com.example.bank_start.repository.TransactionRepository;
 import org.springframework.stereotype.Component;
 
@@ -32,10 +31,6 @@ import java.util.UUID;
  * <p>Если {@code negate = true}, результат запроса инвертируется.
  * Например, запрос {@code USER_OF} с {@code negate = true} означает,
  * что у пользователя НЕ должно быть продуктов данного типа.
- *
- * <h3>Статистика срабатываний:</h3>
- * <p>При успешном выполнении правила автоматически увеличивается
- * счётчик срабатываний в {@link RuleFiringStatsRepository}.
  */
 @Component
 public class DynamicRuleEvaluator {
@@ -43,18 +38,14 @@ public class DynamicRuleEvaluator {
     private static final int ACTIVE_USER_THRESHOLD = 5;
 
     private final TransactionRepository transactionRepository;
-    private final RuleFiringStatsRepository statsRepository;
 
     /**
-     * Создаёт оценщик с указанными репозиториями.
+     * Создаёт оценщик с указанным репозиторием транзакций.
      *
      * @param transactionRepository репозиторий для доступа к данным о транзакциях
-     * @param statsRepository репозиторий для статистики срабатываний правил
      */
-    public DynamicRuleEvaluator(TransactionRepository transactionRepository,
-                                 RuleFiringStatsRepository statsRepository) {
+    public DynamicRuleEvaluator(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
-        this.statsRepository = statsRepository;
     }
 
     /**
@@ -62,7 +53,6 @@ public class DynamicRuleEvaluator {
      *
      * <p>Правило считается выполненным, если все его запросы возвращают true
      * (с учётом модификатора {@code negate}).
-     * При успешном выполнении увеличивается счётчик срабатываний правила.
      *
      * @param dynamicRule динамическое правило для проверки
      * @param userId      идентификатор пользователя
@@ -83,30 +73,7 @@ public class DynamicRuleEvaluator {
                 return false;
             }
         }
-
-        // Increment firing statistics on successful rule evaluation
-        incrementFiringStats(dynamicRule.getId());
         return true;
-    }
-
-    /**
-     * Увеличивает счётчик срабатываний правила.
-     *
-     * <p>Если статистика для правила ещё не создана, создаёт новую запись
-     * со счётчиком 1.
-     *
-     * @param ruleId идентификатор правила
-     */
-    private void incrementFiringStats(UUID ruleId) {
-        statsRepository.findByRuleId(ruleId).ifPresentOrElse(
-                stats -> statsRepository.incrementFireCount(ruleId),
-                () -> {
-                    var stats = new com.example.bank_start.entity.RuleFiringStats();
-                    stats.setRuleId(ruleId);
-                    stats.setFireCount(1L);
-                    statsRepository.save(stats);
-                }
-        );
     }
 
     /**
