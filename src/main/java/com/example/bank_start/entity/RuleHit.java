@@ -48,6 +48,10 @@ public class RuleHit {
     @Column(name = "hit_count", nullable = false)
     private int hitCount = 1;
 
+    /**
+     * Создаёт новую запись о срабатывании правила.
+     * Начальное значение счётчика равно 1.
+     */
     public RuleHit() {
     }
 

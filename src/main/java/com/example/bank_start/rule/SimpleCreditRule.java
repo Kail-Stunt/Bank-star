@@ -8,6 +8,29 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Фиксированное правило рекомендации продукта «Простой кредит».
+ *
+ * <p>Правило рекомендует кредитный продукт пользователю, если выполнены
+ * все следующие условия:
+ * <ol>
+ *   <li>У пользователя НЕТ продуктов типа {@code CREDIT}.</li>
+ *   <li>Сумма депозитов по продуктам типа {@code DEBIT} больше суммы выводов.</li>
+ *   <li>Сумма выводов по продуктам типа {@code DEBIT} превышает 100 000.</li>
+ * </ol>
+ *
+ * <h3>Параметры правила:</h3>
+ * <ul>
+ *   <li><b>ID правила:</b> {@code ab138afb-f3ba-4a93-b74f-0fcee86d447f}</li>
+ *   <li><b>Название:</b> {@code Простой кредит}</li>
+ *   <li><b>Порог выводов DEBIT:</b> 100 000</li>
+ * </ul>
+ *
+ * <h3>Текст рекомендации:</h3>
+ * <p>{@code "Оформите кредит на выгодных условиях"}
+ *
+ * @see RecommendationRuleSet
+ */
 @Component
 public class SimpleCreditRule implements RecommendationRuleSet {
 
