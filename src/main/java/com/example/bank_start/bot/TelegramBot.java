@@ -60,6 +60,9 @@ public class TelegramBot extends TelegramLongPollingBot {
     /**
      * Создаёт бота с указанными сервисами.
      *
+     * <p>Инициализирует зависимости: репозиторий для доступа к данным
+     * о транзакциях и пользователях, а также сервис рекомендаций.
+     *
      * @param transactionRepository репозиторий для доступа к данным о транзакциях и пользователях
      * @param recommendationService сервис для формирования рекомендаций
      */
@@ -72,6 +75,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     /**
      * Возвращает токен бота для подключения к Telegram API.
      *
+     * <p>Токин загружается из свойства {@code telegram.bot.token}.
+     *
      * @return токен бота
      */
     @Override
@@ -81,6 +86,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     /**
      * Возвращает имя бота для подключения к Telegram API.
+     *
+     * <p>Имя загружается из свойства {@code telegram.bot.username}.
      *
      * @return имя бота
      */
@@ -94,7 +101,7 @@ public class TelegramBot extends TelegramLongPollingBot {
      *
      * <p>Проверяет тип обновления:
      * <ul>
-     *   <li>Если это сообщение — вызывает {@link #handleMessage(org.telegram.telegrambots.meta.api.objects.Message}.</li>
+     *   <li>Если это сообщение — вызывает {@link #handleMessage(org.telegram.telegrambots.meta.api.objects.Message)}.</li>
      *   <li>Иначе — игнорирует.</li>
      * </ul>
      *
@@ -115,7 +122,7 @@ public class TelegramBot extends TelegramLongPollingBot {
      *
      * <p>При первом сообщении (без команды) — выводит справку.
      *
-     * @param message входящее сообщение
+     * @param message входящее сообщение от пользователя
      */
     private void handleMessage(org.telegram.telegrambots.meta.api.objects.Message message) {
         long chatId = message.getChatId();
@@ -136,7 +143,15 @@ public class TelegramBot extends TelegramLongPollingBot {
      * Если найден один пользователь — формирует и отправляет рекомендации.
      * Если не найден или найдено несколько — отправляет сообщение об ошибке.
      *
-     * @param chatId идентификатор чата
+     * <h3>Логика работы:</h3>
+     * <ol>
+     *   <li>Проверяет, что имя и фамилия указаны.</li>
+     *   <li>Ищет пользователя через {@link TransactionRepository#findUserByName(String, String)}.</li>
+     *   <li>Получает рекомендации через {@link RecommendationService}.</li>
+     *   <li>Формирует и отправляет отформатированный ответ.</li>
+     * </ol>
+     *
+     * @param chatId идентификатор чата Telegram
      * @param username имя и фамилия пользователя для поиска
      */
     private void handleRecommendCommand(long chatId, String username) {
@@ -190,11 +205,11 @@ public class TelegramBot extends TelegramLongPollingBot {
     /**
      * Ищет пользователя в базе данных по имени и фамилии.
      *
-     * <p>Выполняет SQL-запрос к таблице USERS, ища пользователя,
-     * у которого FIRST_NAME и LAST_NAME содержат указанные значения.
+     * <p>Разбивает строку {@code username} на имя и фамилию,
+     * затем вызывает {@link TransactionRepository#findUserByName(String, String)}.
      *
      * @param username имя и фамилия пользователя (например, "Иван Иванов")
-     * @return UUID пользователя, если найден ровно один; null иначе
+     * @return UUID пользователя, если найден ровно один; {@code null} иначе
      */
     private UUID findUserByName(String username) {
         String[] parts = username.trim().split("\\s+");
@@ -215,17 +230,23 @@ public class TelegramBot extends TelegramLongPollingBot {
     /**
      * Получает полное имя пользователя по его идентификатору.
      *
+     * <p>Вызывает {@link TransactionRepository#getUserNameById(UUID)}
+     * для получения имени в формате "FirstName LastName".
+     *
      * @param userId идентификатор пользователя
-     * @return строка "FirstName LastName", если пользователь найден; null иначе
+     * @return строка "FirstName LastName", если пользователь найден; {@code null} иначе
      */
     private String getUserNameById(UUID userId) {
         return transactionRepository.getUserNameById(userId);
     }
 
     /**
-     * Отправляет сообщение в чат.
+     * Отправляет сообщение в чат Telegram.
      *
-     * @param chatId идентификатор чата
+     * <p>Создаёт объект {@code SendMessage} с указанным {@code chatId}
+     * и {@code text}, затем вызывает {@code execute()} для отправки.
+     *
+     * @param chatId идентификатор чата Telegram
      * @param text текст сообщения
      */
     private void sendMessage(long chatId, String text) {
@@ -242,9 +263,13 @@ public class TelegramBot extends TelegramLongPollingBot {
     /**
      * Обрабатывает команду старта (первое обращение).
      *
-     * <p>Приветствует пользователя и выводит справку по использованию бота.
+     * <p>Приветствует пользователя и выводит справку по использованию бота:
+     * <ul>
+     *   <li>Описание назначения бота.</li>
+     *   <li>Пример использования команды {@code /recommend}.</li>
+     * </ul>
      *
-     * @param chatId идентификатор чата
+     * @param chatId идентификатор чата Telegram
      */
     private void handleStartCommand(long chatId) {
         String helpText = """

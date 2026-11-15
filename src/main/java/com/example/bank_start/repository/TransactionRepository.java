@@ -98,6 +98,8 @@ public class TransactionRepository {
     /**
      * Проверяет, нет ли у пользователя транзакций по продуктам указанного типа.
      *
+     * <p>Является инверсией метода {@link #hasProductType(UUID, String)}.
+     *
      * @param userId       идентификатор пользователя
      * @param productType  тип продукта (DEBIT, CREDIT, INVEST, SAVING)
      * @return true, если у пользователя нет транзакций по продуктам данного типа

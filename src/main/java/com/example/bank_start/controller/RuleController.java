@@ -10,6 +10,11 @@ import com.example.bank_start.entity.RuleHit;
 import com.example.bank_start.entity.RuleQuery;
 import com.example.bank_start.repository.DynamicRuleRepository;
 import com.example.bank_start.repository.RuleHitRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,6 +71,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/rule")
+@Tag(name = "Rule Management", description = "API для управления динамическими правилами рекомендаций")
 public class RuleController {
 
     private final DynamicRuleRepository dynamicRuleRepository;
@@ -105,6 +111,11 @@ public class RuleController {
      * @param request тело запроса с данными нового правила
      * @return ResponseEntity с созданным правилом и статусом 200 OK
      */
+    @Operation(summary = "Создание нового правила рекомендаций", description = "Создаёт новое динамическое правило с условиями и рекомендуемым продуктом")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Правило успешно создано"),
+            @ApiResponse(responseCode = "400", description = "Некорректный формат запроса")
+    })
     @PostMapping
     public ResponseEntity<DynamicRuleResponse> createRule(@RequestBody DynamicRuleRequest request) {
         DynamicRule dynamicRule = new DynamicRule();
@@ -147,6 +158,10 @@ public class RuleController {
      *
      * @return ResponseEntity со списком правил и статусом 200 OK
      */
+    @Operation(summary = "Получение всех правил", description = "Возвращает список всех динамических правил рекомендаций")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Список правил получен")
+    })
     @GetMapping
     public ResponseEntity<RuleListResponse> getAllRules() {
         List<DynamicRuleResponse> rules = dynamicRuleRepository.findAll().stream()
@@ -179,6 +194,10 @@ public class RuleController {
      *
      * @return ResponseEntity со статистикой и статусом 200 OK
      */
+    @Operation(summary = "Статистика срабатываний правил", description = "Возвращает количество срабатываний для каждого динамического правила")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Статистика получена")
+    })
     @GetMapping(path = "/stats", produces = "application/json")
     public ResponseEntity<Map<String, Object>> getRuleStats() {
         List<DynamicRule> allRules = dynamicRuleRepository.findAll();
@@ -222,6 +241,11 @@ public class RuleController {
      * @param productId идентификатор продукта (UUID в строковом формате)
      * @return ResponseEntity со статусом 204 No Content
      */
+    @Operation(summary = "Удаление правила", description = "Удаляет динамическое правило по идентификатору продукта вместе со статистикой")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Правило успешно удалено"),
+            @ApiResponse(responseCode = "404", description = "Правило не найдено")
+    })
     @DeleteMapping("/{product_id}")
     public ResponseEntity<Void> deleteRule(@PathVariable("product_id") String productId) {
         dynamicRuleRepository.findAll().stream()

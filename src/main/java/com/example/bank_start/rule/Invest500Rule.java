@@ -8,6 +8,29 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Фиксированное правило рекомендации инвестиционного продукта «Invest 500».
+ *
+ * <p>Правило рекомендует инвестиционный продукт пользователю, если выполнены
+ * все следующие условия:
+ * <ol>
+ *   <li>У пользователя есть хотя бы один продукт типа {@code DEBIT}.</li>
+ *   <li>У пользователя НЕТ продуктов типа {@code INVEST}.</li>
+ *   <li>Сумма депозитов по продуктам типа {@code SAVING} превышает 1000.</li>
+ * </ol>
+ *
+ * <h3>Параметры правила:</h3>
+ * <ul>
+ *   <li><b>ID правила:</b> {@code 147f6a0f-3b91-413b-ab99-87f081d60d5a}</li>
+ *   <li><b>Название:</b> {@code Invest 500}</li>
+ *   <li><b>Порог депозитов SAVING:</b> 1000</li>
+ * </ul>
+ *
+ * <h3>Текст рекомендации:</h3>
+ * <p>{@code "Откройте инвестиционный счет для приумножения ваших сбережений"}
+ *
+ * @see RecommendationRuleSet
+ */
 @Component
 public class Invest500Rule implements RecommendationRuleSet {
 

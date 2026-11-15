@@ -1,6 +1,10 @@
 package com.example.bank_start.controller;
 
 import com.example.bank_start.repository.TransactionRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,6 +47,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/management")
+@Tag(name = "Management", description = "Административные эндпоинты для управления сервисом")
 public class ManagementController {
 
     private final TransactionRepository transactionRepository;
@@ -80,6 +85,10 @@ public class ManagementController {
      *
      * @return ResponseEntity со статусом 200 OK
      */
+    @Operation(summary = "Очистка всех кешей", description = "Инвалидирует все кеші Caffeine (productTypeCache, transactionSumCache, transactionCountCache)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Кеши успешно очищены")
+    })
     @PostMapping("/clear-caches")
     public ResponseEntity<Map<String, String>> clearCaches() {
         transactionRepository.clearAllCaches();
@@ -102,6 +111,10 @@ public class ManagementController {
      *
      * @return ResponseEntity с информацией о сервисе и статусом 200 OK
      */
+    @Operation(summary = "Информация о сервисе", description = "Возвращает название и версию сервиса для мониторинга")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Информация о сервисе")
+    })
     @GetMapping("/info")
     public ResponseEntity<Map<String, String>> getInfo() {
         return ResponseEntity.ok(Map.of(
